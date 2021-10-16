@@ -217,3 +217,9 @@
  .release_date {
 	 font-weight: normal;
 }
+
+/* edit.html */
+form.form {
+	width: 20rem;
+	margin: 0 auto;
+}

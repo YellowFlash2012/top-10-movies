@@ -44,12 +44,37 @@ class Movies(db.Model):
 # db.session.commit()
 all_movies = []
 
+class EditForm(FlaskForm):
+    rating = StringField("Your rating out of 10", render_kw={'autofocus': True})
+    review = StringField("Your Review")
+    submit = SubmitField("Done")
 
 @app.route("/")
 def home():
     all_movies = db.session.query(Movies).all()
     return render_template("index.html", movies=all_movies)
 
+@app.route("/edit", methods=["GET", "POST"])
+def edit():
+    edit_form = EditForm()
+    movie_id = request.args.get('id')
+    movie_selected = Movies.query.get(movie_id)
+    print(movie_id, flush=True)
+    
+    edit_form.validate_on_submit()
+
+    if edit_form.validate_on_submit():
+        
+        movie_selected.rating = float(edit_form.rating.data)
+        movie_selected.review = edit_form.review.data
+
+        db.session.commit()
+        return redirect(url_for('home'))
+
+    
+    movie_selected = Movies.query.get(movie_id)
+    
+    return render_template("edit.html", form=edit_form, movie=movie_selected)
 
 if __name__ == '__main__':
     app.run(debug=True)
